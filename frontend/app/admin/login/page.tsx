@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import Image from 'next/image';
@@ -10,19 +10,77 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string[]>([]);
   const { login } = useAuth();
   const router = useRouter();
+
+  // Save errors to localStorage for debugging
+  useEffect(() => {
+    if (error) {
+      const errorLog = {
+        timestamp: new Date().toISOString(),
+        error: error,
+        debugInfo: debugInfo,
+      };
+      localStorage.setItem('lastLoginError', JSON.stringify(errorLog));
+      console.error('Login Error Saved:', errorLog);
+    }
+  }, [error, debugInfo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setDebugInfo([]);
     setLoading(true);
 
+    const debugSteps: string[] = [];
+    debugSteps.push(`[${new Date().toLocaleTimeString()}] Starting login process...`);
+
     try {
+      debugSteps.push('Calling login function...');
+      setDebugInfo([...debugSteps]);
+      
       await login(email, password);
+      
+      debugSteps.push('Login successful, redirecting...');
+      setDebugInfo([...debugSteps]);
       router.push('/admin');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      debugSteps.push(`Error caught: ${err.message || 'Unknown error'}`);
+      debugSteps.push(`Error type: ${err.constructor.name}`);
+      debugSteps.push(`Has response: ${!!err.response}`);
+      debugSteps.push(`Has request: ${!!err.request}`);
+      
+      if (err.response) {
+        debugSteps.push(`Response status: ${err.response.status}`);
+        debugSteps.push(`Response data: ${JSON.stringify(err.response.data)}`);
+      }
+      
+      if (err.request) {
+        debugSteps.push(`Request failed - server may be down`);
+      }
+      
+      setDebugInfo([...debugSteps]);
+      
+      // Log full error details
+      const fullError = {
+        message: err.message,
+        stack: err.stack,
+        response: err.response?.data,
+        request: err.request ? 'Request made but no response' : null,
+      };
+      console.error('Full Login Error:', fullError);
+      
+      // Save to localStorage
+      localStorage.setItem('lastLoginError', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        error: fullError,
+        debugSteps: debugSteps,
+      }));
+      
+      // Error is thrown as Error object with message property
+      const errorMessage = err.message || err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -51,7 +109,36 @@ export default function AdminLoginPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
-              {error}
+              <div className="font-bold mb-2">Login Error:</div>
+              <div className="mb-2">{error}</div>
+              {debugInfo.length > 0 && (
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-sm font-semibold">Debug Information (Click to expand)</summary>
+                  <div className="mt-2 p-2 bg-red-100 rounded text-xs font-mono overflow-auto max-h-40">
+                    {debugInfo.map((step, idx) => (
+                      <div key={idx} className="mb-1">{step}</div>
+                    ))}
+                  </div>
+                </details>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  const savedError = localStorage.getItem('lastLoginError');
+                  if (savedError) {
+                    const blob = new Blob([savedError], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `login-error-${Date.now()}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }
+                }}
+                className="mt-2 text-xs underline"
+              >
+                Download Full Error Log
+              </button>
             </div>
           )}
           <div className="rounded-md shadow-sm -space-y-px">

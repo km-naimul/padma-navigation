@@ -38,81 +38,85 @@ export default function AdminDashboard() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">Admin Dashboard</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-gray-900">Admin Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Total Launches</p>
-              <p className="text-3xl font-bold text-gray-900">{stats.launches}</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-gray-600 text-xs sm:text-sm">Total Launches</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{stats.launches}</p>
             </div>
-            <Ship className="h-12 w-12 text-primary-600" />
+            <Ship className="h-8 w-8 sm:h-12 sm:w-12 text-primary-600 flex-shrink-0 ml-2" />
           </div>
           <Link
             href="/admin/launches"
-            className="mt-4 text-primary-600 hover:underline inline-block"
+            className="mt-3 sm:mt-4 text-primary-600 hover:underline inline-block text-sm sm:text-base"
           >
             Manage Launches →
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Total Routes</p>
-              <p className="text-3xl font-bold text-gray-900">{stats.routes}</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-gray-600 text-xs sm:text-sm">Total Routes</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{stats.routes}</p>
             </div>
-            <MapPin className="h-12 w-12 text-primary-600" />
+            <MapPin className="h-8 w-8 sm:h-12 sm:w-12 text-primary-600 flex-shrink-0 ml-2" />
           </div>
           <Link
             href="/admin/routes"
-            className="mt-4 text-primary-600 hover:underline inline-block"
+            className="mt-3 sm:mt-4 text-primary-600 hover:underline inline-block text-sm sm:text-base"
           >
             Manage Routes →
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm">Total Ghats</p>
-              <p className="text-3xl font-bold text-gray-900">{stats.ghats}</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-gray-600 text-xs sm:text-sm">Total Ghats</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{stats.ghats}</p>
             </div>
-            <Clock className="h-12 w-12 text-primary-600" />
+            <Clock className="h-8 w-8 sm:h-12 sm:w-12 text-primary-600 flex-shrink-0 ml-2" />
           </div>
           <Link
             href="/admin/ghats"
-            className="mt-4 text-primary-600 hover:underline inline-block"
+            className="mt-3 sm:mt-4 text-primary-600 hover:underline inline-block text-sm sm:text-base"
           >
             Manage Ghats →
           </Link>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <Link
             href="/admin/launches?action=create"
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 text-center"
+            className="bg-primary-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-primary-700 text-center text-sm sm:text-base transition-colors"
           >
             Add New Launch
           </Link>
           <Link
             href="/admin/routes?action=create"
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 text-center"
+            className="bg-primary-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-primary-700 text-center text-sm sm:text-base transition-colors"
           >
             Add New Route
           </Link>
           <Link
             href="/admin/ghats?action=create"
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 text-center"
+            className="bg-primary-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-primary-700 text-center text-sm sm:text-base transition-colors sm:col-span-2 lg:col-span-1"
           >
             Add New Ghat
           </Link>

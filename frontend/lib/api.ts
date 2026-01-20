@@ -6,11 +6,17 @@ const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === 'true' || !process.env.NEX
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+// Debug logging (remove in production)
+if (typeof window !== 'undefined') {
+  console.log('API Configuration:', { USE_MOCK, API_URL });
+}
+
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
 });
 
 // Add token to requests if available
@@ -103,8 +109,8 @@ export const bookingsApi = USE_MOCK
 export const managementApi = USE_MOCK
   ? mockManagementApi
   : {
-      getAll: () => api.get('/management'),
-      getById: (id: string) => api.get(`/management/${id}`),
+      getAll: () => api.get('/admin/management'),
+      getById: (id: string) => api.get(`/admin/management/${id}`),
       create: (data: any) => api.post('/admin/management', data),
       update: (id: string, data: any) => api.put(`/admin/management/${id}`, data),
       delete: (id: string) => api.delete(`/admin/management/${id}`),
@@ -114,8 +120,8 @@ export const managementApi = USE_MOCK
 export const policiesApi = USE_MOCK
   ? mockPoliciesApi
   : {
-      getAll: () => api.get('/policies'),
-      getById: (id: string) => api.get(`/policies/${id}`),
+      getAll: () => api.get('/admin/policies'),
+      getById: (id: string) => api.get(`/admin/policies/${id}`),
       create: (data: any) => api.post('/admin/policies', data),
       update: (id: string, data: any) => api.put(`/admin/policies/${id}`, data),
       delete: (id: string) => api.delete(`/admin/policies/${id}`),

@@ -57,8 +57,8 @@ const Navigation = () => {
                 />
                 <div className="absolute inset-0 bg-[#d4af37]/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </div>
-              <span className="ml-2 md:ml-3 text-base md:text-2xl font-display font-bold text-white tracking-tight whitespace-nowrap">
-                <span className="text-[#d4af37]">Padma</span> <span className="hidden sm:inline">Navigation</span>
+              <span className="ml-2 md:ml-3 text-sm sm:text-base md:text-2xl font-display font-bold text-white tracking-tight whitespace-nowrap">
+                <span className="text-[#d4af37]">Padma</span> <span className="inline">Navigation</span>
               </span>
             </Link>
           </div>

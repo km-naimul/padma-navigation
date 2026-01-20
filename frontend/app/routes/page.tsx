@@ -27,10 +27,26 @@ export default function RoutesPage() {
         routesApi.getAll().catch(() => ({ data: { data: [] } })),
         launchesApi.getAll().catch(() => ({ data: { data: [] } })),
       ]);
-      setRoutes(routesResponse.data.data || []);
+      
+      // Normalize routes data - convert populated objects to strings if needed
+      const normalizedRoutes = (routesResponse.data.data || []).map((route: any) => ({
+        ...route,
+        schedules: route.schedules?.map((schedule: any) => ({
+          ...schedule,
+          launchId: typeof schedule.launchId === 'object' && schedule.launchId !== null
+            ? schedule.launchId._id || schedule.launchId
+            : schedule.launchId,
+          departureDate: schedule.departureDate || undefined, // Preserve departure date
+          ghatIds: schedule.ghatIds?.map((ghat: any) =>
+            typeof ghat === 'object' && ghat !== null ? ghat._id : ghat
+          ) || [],
+        })) || [],
+      }));
+      
+      setRoutes(normalizedRoutes);
       setLaunches(launchesResponse.data.data || []);
-      if (routesResponse.data.data && routesResponse.data.data.length > 0) {
-        setSelectedRoute(routesResponse.data.data[0]);
+      if (normalizedRoutes.length > 0) {
+        setSelectedRoute(normalizedRoutes[0]);
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch routes');

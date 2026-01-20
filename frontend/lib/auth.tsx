@@ -43,12 +43,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
-    const response = await authApi.login(email, password);
-    const data: LoginResponse = response.data;
-    
-    localStorage.setItem('token', data.token);
-    setToken(data.token);
-    setUser(data.user);
+    try {
+      console.log('Attempting login with:', { email });
+      const response = await authApi.login(email, password);
+      console.log('Login response:', response);
+      const data: LoginResponse = response.data;
+      
+      if (data.status === 'success' && data.token && data.user) {
+        console.log('Login successful, saving token');
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+        setUser(data.user);
+        console.log('Token saved, user set:', data.user);
+      } else {
+        throw new Error('Login failed: Invalid response from server');
+      }
+    } catch (error: any) {
+      console.error('Login error details:', {
+        message: error.message,
+        response: error.response?.data,
+        request: error.request,
+        stack: error.stack,
+      });
+      // Handle axios errors
+      if (error.response) {
+        const errorMessage = error.response.data?.message || 'Login failed. Please check your credentials.';
+        throw new Error(errorMessage);
+      } else if (error.request) {
+        throw new Error('Unable to connect to server. Please check if the backend is running.');
+      } else {
+        throw new Error(error.message || 'Login failed. Please check your credentials.');
+      }
+    }
   };
 
   const logout = (): void => {

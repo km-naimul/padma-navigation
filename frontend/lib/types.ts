@@ -18,7 +18,7 @@ export interface Launch {
 export interface Route {
   _id: string;
   name: string;
-  launchIds: string[];
+  launchIds: string[] | Array<{ _id: string; name?: string }>;
   schedules: Schedule[];
   distance?: string;
   estimatedDuration?: string;
@@ -27,11 +27,12 @@ export interface Route {
 }
 
 export interface Schedule {
-  launchId: string;
+  launchId: string | { _id: string; name?: string };
   departureTime: string;
+  departureDate?: string; // Date in YYYY-MM-DD format
   arrivalTime?: string;
   daysOfWeek: string[];
-  ghatIds: string[];
+  ghatIds: string[] | Array<{ _id: string; name?: string; location?: string }>;
 }
 
 export interface Ghat {

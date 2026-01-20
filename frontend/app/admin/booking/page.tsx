@@ -93,8 +93,8 @@ export default function AdminBookingPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Manage Booking Information</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Manage Booking Information</h1>
         <button
           onClick={() => {
             setEditingBooking(null);
@@ -106,16 +106,16 @@ export default function AdminBookingPage() {
             });
             setShowForm(true);
           }}
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center gap-2"
+          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center justify-center gap-2 text-sm sm:text-base w-full sm:w-auto"
         >
-          <Plus className="h-5 w-5" />
+          <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
           Add Booking Info
         </button>
       </div>
 
       {showForm ? (
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">
             {editingBooking ? 'Edit Booking Information' : 'Create New Booking Information'}
           </h2>
           <div className="space-y-4">
@@ -216,10 +216,10 @@ export default function AdminBookingPage() {
                 Add Instruction
               </button>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={handleSave}
-                className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
+                className="bg-primary-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-primary-700 text-sm sm:text-base w-full sm:w-auto"
               >
                 Save
               </button>
@@ -228,7 +228,7 @@ export default function AdminBookingPage() {
                   setShowForm(false);
                   setEditingBooking(null);
                 }}
-                className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300"
+                className="bg-gray-200 text-gray-700 px-4 sm:px-6 py-2 rounded-lg hover:bg-gray-300 text-sm sm:text-base w-full sm:w-auto"
               >
                 Cancel
               </button>
@@ -237,41 +237,55 @@ export default function AdminBookingPage() {
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {bookings.map((booking) => (
-                <tr key={booking._id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{booking.title}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {booking.description.substring(0, 100)}...
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(booking)}
-                        className="text-primary-600 hover:text-primary-800"
-                      >
-                        <Edit className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(booking._id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                    <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {bookings.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-4 sm:px-6 py-8 text-center text-sm text-gray-500">
+                        No booking information found
+                      </td>
+                    </tr>
+                  ) : (
+                    bookings.map((booking) => (
+                      <tr key={booking._id} className="hover:bg-gray-50">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">{booking.title}</td>
+                        <td className="px-4 sm:px-6 py-4 text-sm text-gray-500">
+                          <span className="line-clamp-2">{booking.description.substring(0, 100)}...</span>
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEdit(booking)}
+                              className="text-primary-600 hover:text-primary-800 p-1 touch-manipulation"
+                              aria-label="Edit booking"
+                            >
+                              <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(booking._id)}
+                              className="text-red-600 hover:text-red-800 p-1 touch-manipulation"
+                              aria-label="Delete booking"
+                            >
+                              <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -68,6 +68,7 @@ const RouteForm = ({ route, onSave, onCancel }: RouteFormProps) => {
         {
           launchId: '',
           departureTime: '',
+          departureDate: '',
           arrivalTime: '',
           daysOfWeek: [],
           ghatIds: [],
@@ -221,6 +222,19 @@ const RouteForm = ({ route, onSave, onCancel }: RouteFormProps) => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Departure Date
+                </label>
+                <input
+                  type="date"
+                  value={schedule.departureDate || ''}
+                  onChange={(e) => updateSchedule(index, 'departureDate', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Select date (optional)"
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave empty for recurring schedules</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

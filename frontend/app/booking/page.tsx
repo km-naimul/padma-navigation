@@ -13,24 +13,49 @@ export default function BookingPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchLaunches();
+    let isMounted = true;
+    
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await launchesApi.getAll({ status: 'active' });
+        
+        if (!isMounted) return;
+        
+        // Handle response structure: response.data.data or response.data
+        const launchesData = response?.data?.data || response?.data || [];
+        setLaunches(Array.isArray(launchesData) ? launchesData : []);
+      } catch (err: any) {
+        if (!isMounted) return;
+        
+        console.error('Error fetching launches:', err);
+        const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch launches. Please check if the backend server is running.';
+        setError(errorMessage);
+        // Set empty array on error so page can still render
+        setLaunches([]);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchData();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const fetchLaunches = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await launchesApi.getAll({ status: 'active' });
-      setLaunches(response.data.data || []);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch launches');
-    } finally {
-      setLoading(false);
-    }
+
+  const retryFetch = () => {
+    window.location.reload();
   };
 
   if (loading) return <Loading />;
-  if (error) return <ErrorMessage message={error} onRetry={fetchLaunches} />;
+  if (error) return <ErrorMessage message={error} onRetry={retryFetch} />;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-[#f5f1e8] min-h-screen">

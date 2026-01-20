@@ -1,6 +1,6 @@
 import { Route, Schedule, Launch } from '@/lib/types';
 import { formatTime } from '@/lib/utils';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, Calendar } from 'lucide-react';
 
 interface ScheduleTableProps {
   route: Route;
@@ -8,7 +8,12 @@ interface ScheduleTableProps {
 }
 
 const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
-  const getLaunchName = (launchId: string): string => {
+  const getLaunchName = (launchId: string | { _id: string; name?: string }): string => {
+    // Handle populated object from backend
+    if (typeof launchId === 'object' && launchId !== null) {
+      return launchId.name || launchId._id || 'Unknown Launch';
+    }
+    // Handle string ID
     const launch = launches.find((l) => l._id === launchId);
     return launch ? launch.name : launchId;
   };
@@ -34,6 +39,9 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
                   Launch
                 </th>
                 <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Departure Date
+                </th>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Departure Time
                 </th>
                 <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -53,8 +61,24 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm font-medium">
                       <span className="text-[#d4af37] font-bold tracking-wide">
-                        {getLaunchName(schedule.launchId)}
+                        {typeof schedule.launchId === 'object' && schedule.launchId !== null
+                          ? schedule.launchId.name || schedule.launchId._id
+                          : getLaunchName(schedule.launchId)}
                       </span>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
+                      {schedule.departureDate ? (
+                        <div className="flex items-center">
+                          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                          {new Date(schedule.departureDate).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
                     </td>
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                       {schedule.departureTime ? (
@@ -96,7 +120,7 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
                       {schedule.ghatIds && schedule.ghatIds.length > 0 ? (
                         <div className="flex items-center">
                           <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-                          {schedule.ghatIds.length} stops
+                          {schedule.ghatIds.length} stop{schedule.ghatIds.length !== 1 ? 's' : ''}
                         </div>
                       ) : (
                         <span className="text-gray-400">-</span>
@@ -106,7 +130,7 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-4 sm:px-6 py-4 text-center text-xs sm:text-sm text-gray-500">
+                  <td colSpan={6} className="px-4 sm:px-6 py-4 text-center text-xs sm:text-sm text-gray-500">
                     No schedules available
                   </td>
                 </tr>
