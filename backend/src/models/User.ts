@@ -19,6 +19,7 @@ const UserSchema: Schema = new Schema(
       unique: true,
       trim: true,
       minlength: [3, 'Username must be at least 3 characters'],
+      index: true,
     },
     email: {
       type: String,
@@ -27,6 +28,7 @@ const UserSchema: Schema = new Schema(
       lowercase: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
+      index: true,
     },
     password: {
       type: String,
@@ -51,7 +53,7 @@ UserSchema.pre('save', async function (next) {
     return next();
   }
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password as string, salt);
   next();
 });
 
@@ -59,11 +61,9 @@ UserSchema.pre('save', async function (next) {
 UserSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
-  return await bcrypt.compare(candidatePassword, this.password);
+  return await bcrypt.compare(candidatePassword, this.password as string);
 };
 
-// Indexes
-UserSchema.index({ email: 1 });
-UserSchema.index({ username: 1 });
+// Indexes are automatically created by unique: true, no need to manually add them
 
 export default mongoose.model<IUser>('User', UserSchema);

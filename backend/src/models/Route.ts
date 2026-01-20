@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface ISchedule {
   launchId: mongoose.Types.ObjectId;
   departureTime: string;
+  departureDate?: string; // Date in YYYY-MM-DD format
   arrivalTime?: string;
   daysOfWeek: string[];
   ghatIds: mongoose.Types.ObjectId[];
@@ -28,6 +29,10 @@ const ScheduleSchema: Schema = new Schema(
     departureTime: {
       type: String,
       required: [true, 'Departure time is required'],
+    },
+    departureDate: {
+      type: String,
+      // Optional field for specific departure dates (YYYY-MM-DD format)
     },
     arrivalTime: {
       type: String,

@@ -39,9 +39,6 @@ const router = Router();
 router.use('/launches', launchRoutes);
 router.use('/routes', routeRoutes);
 router.use('/ghats', ghatRoutes);
-router.use('/bookings', bookingRoutes);
-router.use('/management', managementRoutes);
-router.use('/policies', policyRoutes);
 router.use('/auth', authRoutes);
 
 // Admin routes (protected)
@@ -108,11 +105,11 @@ adminRouter.put(
 );
 adminRouter.delete('/ghats/:id', authenticate, deleteGhat);
 
-// Admin bookings, management, and policies are handled in their respective route files
-// They use authenticate middleware in their route definitions
+// Admin bookings, management, and policies routes
+adminRouter.use('/bookings', bookingRoutes);
+adminRouter.use('/management', managementRoutes);
+adminRouter.use('/policies', policyRoutes);
 
 router.use('/admin', adminRouter);
-
-export default router;
 
 export default router;

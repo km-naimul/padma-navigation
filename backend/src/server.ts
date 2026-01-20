@@ -12,6 +12,8 @@ const app: Application = express();
 app.use(cors({
   origin: config.frontendUrl,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(morgan('dev'));
 app.use(express.json());
@@ -22,6 +24,22 @@ app.use('/uploads', express.static('uploads'));
 
 // Routes
 app.use('/api', routes);
+
+// API root endpoint
+app.get('/api', (req, res) => {
+  res.json({
+    status: 'success',
+    message: 'Padma Navigation API',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth/login',
+      launches: '/api/launches',
+      routes: '/api/routes',
+      ghats: '/api/ghats',
+      health: '/health',
+    },
+  });
+});
 
 // Health check
 app.get('/health', (req, res) => {

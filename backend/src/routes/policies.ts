@@ -12,11 +12,9 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
-// Public routes
-router.get('/', getAllPolicies);
-router.get('/:id', getPolicyById);
-
-// Admin routes (protected)
+// Admin routes (all protected)
+router.get('/', authenticate, getAllPolicies);
+router.get('/:id', authenticate, getPolicyById);
 router.post(
   '/',
   authenticate,
