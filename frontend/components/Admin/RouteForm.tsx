@@ -12,10 +12,26 @@ interface RouteFormProps {
 }
 
 const RouteForm = ({ route, onSave, onCancel }: RouteFormProps) => {
+  // Normalize launchIds to string array
+  const normalizeLaunchIds = (launchIds: string[] | Array<{ _id: string; name?: string }> | undefined): string[] => {
+    if (!launchIds) return [];
+    return launchIds.map((id) => (typeof id === 'string' ? id : id._id));
+  };
+
+  // Normalize schedules to ensure launchId and ghatIds are strings/string arrays
+  const normalizeSchedules = (schedules: Schedule[] | undefined): Schedule[] => {
+    if (!schedules) return [];
+    return schedules.map((schedule) => ({
+      ...schedule,
+      launchId: typeof schedule.launchId === 'string' ? schedule.launchId : schedule.launchId._id,
+      ghatIds: normalizeLaunchIds(schedule.ghatIds),
+    }));
+  };
+
   const [formData, setFormData] = useState({
     name: route?.name || '',
-    launchIds: route?.launchIds || [],
-    schedules: route?.schedules || [],
+    launchIds: normalizeLaunchIds(route?.launchIds),
+    schedules: normalizeSchedules(route?.schedules),
     distance: route?.distance || '',
     estimatedDuration: route?.estimatedDuration || '',
   });
@@ -211,7 +227,7 @@ const RouteForm = ({ route, onSave, onCancel }: RouteFormProps) => {
                 </label>
                 <select
                   required
-                  value={schedule.launchId}
+                  value={typeof schedule.launchId === 'string' ? schedule.launchId : schedule.launchId._id}
                   onChange={(e) => updateSchedule(index, 'launchId', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
@@ -265,7 +281,9 @@ const RouteForm = ({ route, onSave, onCancel }: RouteFormProps) => {
                 </label>
                 <select
                   multiple
-                  value={schedule.ghatIds || []}
+                  value={Array.isArray(schedule.ghatIds) 
+                    ? schedule.ghatIds.map((id) => typeof id === 'string' ? id : id._id)
+                    : []}
                   onChange={(e) =>
                     updateSchedule(
                       index,

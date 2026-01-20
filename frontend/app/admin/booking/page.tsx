@@ -82,7 +82,11 @@ export default function AdminBookingPage() {
     setFormData({
       title: booking.title,
       description: booking.description,
-      contactInfo: booking.contactInfo || { phone: '', email: '', address: '' },
+      contactInfo: {
+        phone: booking.contactInfo?.phone || '',
+        email: booking.contactInfo?.email || '',
+        address: booking.contactInfo?.address || '',
+      },
       instructions: booking.instructions && booking.instructions.length > 0 ? booking.instructions : [''],
     });
     setShowForm(true);
