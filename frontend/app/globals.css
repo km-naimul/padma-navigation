@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 10, 25, 41;
+  --background-start-rgb: 245, 241, 232;
+  --background-end-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+  
+  @media (min-width: 640px) {
+    h1 {
+      font-size: 2.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    h1 {
+      font-size: 3.5rem;
+      line-height: 1.1;
+    }
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+  
+  @media (min-width: 640px) {
+    h2 {
+      font-size: 2rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    h2 {
+      font-size: 2.5rem;
+    }
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    line-height: 1.4;
+  }
+  
+  @media (min-width: 640px) {
+    h3 {
+      font-size: 1.75rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    h3 {
+      font-size: 2rem;
+    }
+  }
+  
+  p {
+    line-height: 1.75;
+  }
+}
+
+@layer components {
+  .luxury-gradient {
+    background: linear-gradient(135deg, #0a1929 0%, #1a2332 50%, #0a1929 100%);
+  }
+  
+  .gold-gradient {
+    background: linear-gradient(135deg, #d4af37 0%, #f4e4bc 100%);
+  }
+  
+  .text-luxury-gold {
+    color: #d4af37;
+  }
+  
+  .border-luxury-gold {
+    border-color: #d4af37;
+  }
+  
+  .bg-luxury-gold {
+    background-color: #d4af37;
+  }
+  
+  .hover-gold {
+    transition: all 0.3s ease;
+  }
+  
+  .hover-gold:hover {
+    color: #d4af37;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .letter-spacing-tight {
+    letter-spacing: -0.02em;
+  }
+  
+  .letter-spacing-wide {
+    letter-spacing: 0.05em;
+  }
+  
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  * {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
