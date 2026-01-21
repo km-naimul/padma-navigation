@@ -18,6 +18,15 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
     return launch ? launch.name : launchId;
   };
 
+  // Valid day names
+  const validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  
+  // Function to check if a day is valid
+  const isValidDay = (day: string): boolean => {
+    const lowerDay = day.toLowerCase();
+    return validDays.some(validDay => validDay.toLowerCase() === lowerDay);
+  };
+
   // Function to get clean day abbreviation
   const getDayAbbreviation = (day: string): string => {
     const dayMap: { [key: string]: string } = {
@@ -51,8 +60,8 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
       }
     }
     
-    // Fallback to first 3 characters, capitalized
-    return day.substring(0, 3).charAt(0).toUpperCase() + day.substring(1, 3).toLowerCase();
+    // If not a valid day, return empty string (will be filtered out)
+    return '';
   };
 
   return (
@@ -139,16 +148,28 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
                     </td>
                     <td className="px-4 sm:px-6 py-4 text-xs sm:text-sm text-gray-500">
                       {schedule.daysOfWeek && schedule.daysOfWeek.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {schedule.daysOfWeek.map((day, dayIndex) => (
-                            <span
-                              key={dayIndex}
-                              className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-800 text-xs rounded"
-                            >
-                              {getDayAbbreviation(day)}
-                            </span>
-                          ))}
-                        </div>
+                        (() => {
+                          // Filter out invalid days (like "Daily") and get valid abbreviations
+                          const validDayAbbreviations = schedule.daysOfWeek
+                            .filter(day => isValidDay(day))
+                            .map(day => getDayAbbreviation(day))
+                            .filter(abbr => abbr !== ''); // Remove empty strings
+                          
+                          return validDayAbbreviations.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {validDayAbbreviations.map((abbr, dayIndex) => (
+                                <span
+                                  key={dayIndex}
+                                  className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                                >
+                                  {abbr}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          );
+                        })()
                       ) : (
                         <span className="text-gray-400">-</span>
                       )}
