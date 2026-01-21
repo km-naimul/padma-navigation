@@ -1,6 +1,6 @@
 import { Route, Schedule, Launch } from '@/lib/types';
 import { formatTime } from '@/lib/utils';
-import { Clock, MapPin, Calendar } from 'lucide-react';
+import { Clock, MapPin, CalendarDays } from 'lucide-react';
 
 interface ScheduleTableProps {
   route: Route;
@@ -18,15 +18,42 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
     return launch ? launch.name : launchId;
   };
 
-  const daysOfWeek = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
+  // Function to get clean day abbreviation
+  const getDayAbbreviation = (day: string): string => {
+    const dayMap: { [key: string]: string } = {
+      'Monday': 'Mon',
+      'Tuesday': 'Tue',
+      'Wednesday': 'Wed',
+      'Thursday': 'Thu',
+      'Friday': 'Fri',
+      'Saturday': 'Sat',
+      'Sunday': 'Sun',
+      // Handle case-insensitive and variations
+      'monday': 'Mon',
+      'tuesday': 'Tue',
+      'wednesday': 'Wed',
+      'thursday': 'Thu',
+      'friday': 'Fri',
+      'saturday': 'Sat',
+      'sunday': 'Sun',
+    };
+    
+    // Try exact match first
+    if (dayMap[day]) {
+      return dayMap[day];
+    }
+    
+    // Try case-insensitive match
+    const lowerDay = day.toLowerCase();
+    for (const [key, value] of Object.entries(dayMap)) {
+      if (key.toLowerCase() === lowerDay) {
+        return value;
+      }
+    }
+    
+    // Fallback to first 3 characters, capitalized
+    return day.substring(0, 3).charAt(0).toUpperCase() + day.substring(1, 3).toLowerCase();
+  };
 
   return (
     <div className="overflow-x-auto -mx-4 sm:mx-0">
@@ -69,12 +96,22 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                       {schedule.departureDate ? (
                         <div className="flex items-center">
-                          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-                          {new Date(schedule.departureDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
+                          <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+                          {(() => {
+                            try {
+                              const date = new Date(schedule.departureDate);
+                              if (isNaN(date.getTime())) {
+                                return schedule.departureDate; // Return as-is if invalid
+                              }
+                              return date.toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              });
+                            } catch {
+                              return schedule.departureDate; // Return as-is on error
+                            }
+                          })()}
                         </div>
                       ) : (
                         <span className="text-gray-400">-</span>
@@ -108,7 +145,7 @@ const ScheduleTable = ({ route, launches = [] }: ScheduleTableProps) => {
                               key={dayIndex}
                               className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-800 text-xs rounded"
                             >
-                              {day.substring(0, 3)}
+                              {getDayAbbreviation(day)}
                             </span>
                           ))}
                         </div>
