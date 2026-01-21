@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const Navigation = () => {
@@ -12,14 +12,27 @@ const Navigation = () => {
   // Check if user is logged in by checking localStorage
   const [user, setUser] = useState<boolean>(false);
 
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
-    if (token && !user) {
-      setUser(true);
-    } else if (!token && user) {
-      setUser(false);
-    }
-  }
+  useEffect(() => {
+    // Check if user is logged in
+    const checkAuth = () => {
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('token');
+        setUser(!!token);
+      }
+    };
+
+    checkAuth();
+
+    // Listen for storage changes (e.g., when logging in/out in another tab)
+    window.addEventListener('storage', checkAuth);
+    
+    // Also check on pathname change (in case login happens on same tab)
+    checkAuth();
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+    };
+  }, [pathname]);
 
   const logout = () => {
     if (typeof window !== 'undefined') {
@@ -137,8 +150,10 @@ const Navigation = () => {
                 {link.label}
               </Link>
             ))}
-            {user && (
+            {/* Admin and Logout links for mobile */}
+            {user ? (
               <>
+                <div className="border-t border-white/10 my-2"></div>
                 <Link
                   href="/admin"
                   onClick={() => setMobileMenuOpen(false)}
@@ -155,6 +170,17 @@ const Navigation = () => {
                 >
                   Logout
                 </button>
+              </>
+            ) : (
+              <>
+                <div className="border-t border-white/10 my-2"></div>
+                <Link
+                  href="/admin/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block pl-4 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-[#d4af37] bg-white/5 active:bg-white/10 active:border-[#d4af37] touch-manipulation"
+                >
+                  Admin Login
+                </Link>
               </>
             )}
           </div>
